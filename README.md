@@ -11,6 +11,17 @@ All images, sounds and music are embedded, so `go build` produces a single
 self-contained binary that needs no asset files at run time. Keyboard and gamepad
 are both supported.
 
+## Download
+
+Prebuilt, self-contained binaries — no install, no dependencies, assets embedded.
+Grab the latest for your platform:
+
+- **Linux** (amd64) — [eggzy-linux-amd64.tar.gz](https://github.com/chrplr/eggzy-go/releases/latest/download/eggzy-linux-amd64.tar.gz)
+- **macOS** (Apple Silicon) — [eggzy-macos-arm64.tar.gz](https://github.com/chrplr/eggzy-go/releases/latest/download/eggzy-macos-arm64.tar.gz)
+- **Windows** (amd64) — [eggzy-windows-amd64.zip](https://github.com/chrplr/eggzy-go/releases/latest/download/eggzy-windows-amd64.zip)
+
+All versions are on the [releases page](https://github.com/chrplr/eggzy-go/releases).
+
 ## Run
 
 ```sh
