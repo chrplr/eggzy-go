@@ -21,7 +21,8 @@ jobs:
 
       # go-sdl3 is pure Go (purego, no CGo) and embeds the SDL libraries for every
       # platform, so all targets cross-compile from Linux into self-contained,
-      # dependency-free binaries (assets are embedded too).
+      # dependency-free binaries (assets are embedded too). Unix targets ship as
+      # .tar.gz (preserves the executable bit); Windows ships as .zip.
       - name: Build Linux/amd64, Windows/amd64 and macOS/arm64 archives
         env:
           CGO_ENABLED: "0"
@@ -31,7 +32,7 @@ jobs:
           mkdir -p dist
 
           GOOS=linux GOARCH=amd64 go build -o "${name}" .
-          zip -j "dist/${name}-linux-amd64.zip" "${name}" README.md LICENSE
+          tar -czf "dist/${name}-linux-amd64.tar.gz" "${name}" README.md LICENSE
           rm -f "${name}"
 
           GOOS=windows GOARCH=amd64 go build -o "${name}.exe" .
@@ -39,7 +40,7 @@ jobs:
           rm -f "${name}.exe"
 
           GOOS=darwin GOARCH=arm64 go build -o "${name}" .
-          zip -j "dist/${name}-macos-arm64.zip" "${name}" README.md LICENSE
+          tar -czf "dist/${name}-macos-arm64.tar.gz" "${name}" README.md LICENSE
           rm -f "${name}"
 
       # Only publish for a version tag; a manual run from a branch just builds
@@ -48,5 +49,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.zip
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
           fail_on_unmatched_files: true
