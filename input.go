@@ -54,14 +54,14 @@ func (c Controls) getY() float64 {
 
 func (c Controls) buttonDown(button int) bool {
 	if button == 0 {
-		return keyDown(sdl.SCANCODE_SPACE) || padButton0()
+		return keyDown(sdl.SCANCODE_SPACE) || keyDown(sdl.SCANCODE_RETURN) || keyDown(sdl.SCANCODE_KP_ENTER) || padButton0()
 	}
 	return keyDown(sdl.SCANCODE_Z) || padButton1()
 }
 
 func (c Controls) buttonPressed(button int) bool {
 	if button == 0 {
-		return keyJustPressed(sdl.SCANCODE_SPACE) || padButton0Pressed()
+		return keyJustPressed(sdl.SCANCODE_SPACE) || keyJustPressed(sdl.SCANCODE_RETURN) || keyJustPressed(sdl.SCANCODE_KP_ENTER) || padButton0Pressed()
 	}
 	return keyJustPressed(sdl.SCANCODE_Z) || padButton1Pressed()
 }
