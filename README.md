@@ -1,5 +1,7 @@
 # Eggzy — Go port
 
+[![Latest release](https://img.shields.io/github/v/release/chrplr/eggzy-go)](https://github.com/chrplr/eggzy-go/releases/latest)
+
 **▶ Play it in your browser: <https://chrplr.github.io/eggzy-go/>**
 
 A Go re-implementation of the Pygame Zero game **Eggzy** from *Code the Classics
