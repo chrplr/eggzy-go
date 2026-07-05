@@ -1,0 +1,48 @@
+name: Release binaries
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+# The publish step creates a release and uploads assets to this repo.
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      # go-sdl3 is pure Go (purego, no CGo) and embeds the SDL libraries for every
+      # platform, so both targets cross-compile from Linux into self-contained,
+      # dependency-free binaries (assets are embedded too).
+      - name: Build Windows/amd64 and macOS/arm64 archives
+        env:
+          CGO_ENABLED: "0"
+        run: |
+          name="${GITHUB_REPOSITORY##*/}"   # e.g. boing-go
+          name="${name%-go}"                # e.g. boing
+          mkdir -p dist
+
+          GOOS=windows GOARCH=amd64 go build -o "${name}.exe" .
+          zip -j "dist/${name}-windows-amd64.zip" "${name}.exe" README.md LICENSE
+          rm -f "${name}.exe"
+
+          GOOS=darwin GOARCH=arm64 go build -o "${name}" .
+          zip -j "dist/${name}-macos-arm64.zip" "${name}" README.md LICENSE
+          rm -f "${name}"
+
+      # Only publish for a version tag; a manual run from a branch just builds
+      # (a compile check) without creating a release.
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          fail_on_unmatched_files: true
