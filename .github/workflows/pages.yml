@@ -3,6 +3,9 @@ name: Deploy WebAssembly demo to Pages
 on:
   push:
     branches: [main]
+    # Docs-only changes don't affect the built game, so skip the rebuild.
+    paths-ignore:
+      - '**.md'
   workflow_dispatch:
 
 # Grant the token the permissions the Pages deployment needs.
