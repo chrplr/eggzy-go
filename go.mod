@@ -4,7 +4,7 @@ go 1.26.2
 
 require (
 	github.com/Zyko0/go-sdl3 v0.1.1
-	github.com/chrplr/pgzgo v0.3.0
+	github.com/chrplr/pgzgo v0.4.0
 )
 
 require (
