@@ -12,8 +12,19 @@ Volume 2* (Raspberry Pi Press), built on
 [pgzgo](https://github.com/chrplr/pgzgo) harness.
 
 All images, sounds and music are embedded, so `go build` produces a single
-self-contained binary that needs no asset files at run time. Keyboard and gamepad
-are both supported.
+self-contained binary that needs no asset files at run time.
+
+## Controls
+
+| Action | Keyboard | Gamepad |
+|--------|----------|---------|
+| Move   | Arrow keys | D-pad or left stick |
+| Jump   | Space / Enter | A |
+| Dash   | Z | B |
+| Start  | Space / Enter | A |
+| Quit   | Esc | Start |
+
+Gamepad support is native-only; the in-browser build is keyboard-only.
 
 ## Download
 
