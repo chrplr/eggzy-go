@@ -13,9 +13,9 @@ platform feature (game controllers, a writable home folder) is out of scope for
 the port.
 
 The single Python file (`eggzy.py`, ~1,600 lines) is split into ~18 focused Go
-files (~2,100 lines total). The extra volume is almost entirely boilerplate that
-Python gets for free: explicit struct definitions, interface declarations,
-XML‑binding tags, and the sprite‑font/asset plumbing that Pygame Zero hides.
+files (~2,100 lines total). The extra volume is almost entirely language-level boilerplate that
+Python gets for free: explicit struct/interface declarations and XML-binding tags.
+The sprite-font/asset/loop plumbing itself now lives in the pgzgo harness, not per game.
 
 ---
 
@@ -54,7 +54,7 @@ full movement state machine) and `Game.load_level`/`(*Game).loadLevel` +
 | Tiled TMX/TSX parsing | inline `ET.parse` | `tilemap.go` |
 | Input | `Controls`/`KeyboardControls` | `input.go` |
 | Assets / sprite font | Pygame Zero `images`/`draw_text` | `assets.go` |
-| Audio | Pygame Zero `sounds`/`music` | `audio.go` |
+| Audio | Pygame Zero `sounds`/`music` | pgzgo `Audio` |
 | State machine / entry point | `update`/`draw`/module code | `main.go` |
 
 ---
@@ -161,29 +161,26 @@ fully‑constructed `g`, so the nil‑check disappears.
 
 ---
 
-## 4. Framework substitution: Pygame Zero → go‑sdl3
+## 4. Framework: Pygame Zero → pgzgo (on go-sdl3)
 
-Pygame Zero supplies a lot of implicit machinery that the Go port must build
-explicitly.
+pgzgo supplies this machinery; the game adds only the pieces specific to it.
 
-| Pygame Zero feature | Go / go‑sdl3 replacement |
+| Pygame Zero feature | pgzgo equivalent (over go-sdl3) |
 |---|---|
-| `Actor("name", pos, anchor)` auto‑loads `images/name.png` | `Assets.Texture(name)` lazily loads + caches `*sdl.Texture` |
-| `screen.blit(name, (x,y))` | `Assets.Blit` → `renderer.RenderTexture` |
-| `screen.surface.blit(img, dst, area=rect)` (tileset sub‑blit) | `Assets.BlitTile` with a `src` `FRect` |
+| `Actor("name", …)` auto-loads a PNG | `Screen.Texture` — pgzgo's lazily-cached texture |
+| `screen.blit(name, (x,y))` | `Screen.Blit` / `BlitCentred` |
+| tileset sub-blit | `Screen.BlitTile` (pgzgo) |
 | Anchor tuples resolved internally | `Anchor` struct + `offset(w,h)` (§6) |
-| `keyboard.left`, `keyboard.space` | `sdl.GetKeyboardState()` snapshot in `input.go` |
-| `sounds.collect.play()` via `getattr` | `Audio.PlaySound(name, count)` (§8) |
-| `music.play`/`music.set_volume` | `Audio.PlayMusic` with a looping mixer track |
+| `keyboard.left`, `keyboard.space` | `app.Keyboard.Held(sc)` snapshot; edge latch in `input.go` |
+| `sounds.foo.play()` via `getattr` | `Audio.PlaySound(name, count)` |
+| `music.play`/`set_volume` | `Audio.PlayMusic` |
 | `ET.parse(...)` (ElementTree) | `encoding/xml` structs in `tilemap.go` (§5) |
-| The `update()`/`draw()` game loop | explicit `sdl.RunLoop` in `main.go` with a frame delay |
-| Sprite font via `draw_text` | `Assets.DrawText` / `charImageAndWidth` (§7) |
+| the `update()`/`draw()` loop | `app.Loop(update, draw)` — pgzgo's fixed-step, FPS-capped loop |
+| sprite font via `draw_text` | its own `Assets.DrawText`/`charImageAndWidth` over `Screen` (§7) |
 
 ### The game loop and frame timing
 
-Pygame Zero calls `update()` and `draw()` at a fixed 60 Hz for you. The Go
-`main.go` runs the loop itself: poll events → `refreshKeys()` → clear → `update()`
-→ `draw()` → present, then `sdl.Delay` to pad the frame out to `1000/60` ms.
+pgzgo's `app.Loop` runs the fixed-step, FPS-capped loop, calling `update` then `draw` each tick.
 Both games are frame‑count driven (`game.timer` / `g.timer` increments once per
 update and animation frames are `timer // interval`), so the timing model matches
 as long as the loop runs at 60 Hz. The Python `DEBUG_SLOWMO` frame‑skip is not
@@ -406,8 +403,8 @@ are all forced by the language or framework:
 
 - inheritance → **embedding + a `self` interface** for the one virtual call;
 - the `game` global → an **explicit `*Game` parameter** everywhere;
-- Pygame Zero's implicit asset/sound/font/loop machinery → **explicit go‑sdl3
-  plumbing** (`assets.go`, `audio.go`, `input.go`, `main.go`);
+- Pygame Zero's implicit asset/sound/font/loop machinery → the **pgzgo harness**
+  (a thin `assets.go` adds only tileset loading + the sprite font);
 - ElementTree XPath → **`encoding/xml` structs + property‑lookup helpers**;
 - anchor tuples → a small **`Anchor` struct**.
 
