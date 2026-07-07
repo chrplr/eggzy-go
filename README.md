@@ -28,6 +28,16 @@ Gamepad support is native-only; the in-browser build is keyboard-only.
 
 ![Keyboard controls for Eggzy](keyboard.svg)
 
+## How to play
+
+**The goal.** In each level, **collect all the gems** to unlock the exit door, then reach the door to move on. The levels loop endlessly and get harder each time around.
+
+**Race the clock.** A countdown timer at the top of the screen is your lifeline — when it hits zero, the game is over. Every gem you grab tops the timer up, so collecting them keeps you alive as well as opening the door. There are no lives; the clock is the only thing that ends your run.
+
+**Moving.** Run and **jump** with the movement keys; press jump again against a wall to **wall-jump** up narrow gaps, and **dash** for a quick burst of horizontal speed to cross gaps or reach far gems.
+
+**Enemies.** **Stomp** enemies by landing on top of them. Touch one from the side or below and you're knocked back, losing momentum and precious seconds — so line up your jumps.
+
 ## Download
 
 Prebuilt, self-contained binaries — no install, no dependencies, assets embedded.
